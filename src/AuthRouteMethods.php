@@ -13,31 +13,33 @@ class AuthRouteMethods
     public function auth()
     {
         return function ($options = []) {
+            $namespace = $options['namespace'] ?? 'App\Http\Controllers\\';
+
             // Authentication Routes...
-            $this->get('login', 'Auth\LoginController@showLoginForm')->name('login');
-            $this->post('login', 'Auth\LoginController@login');
-            $this->post('logout', 'Auth\LoginController@logout')->name('logout');
+            $this->get('login', $namespace . 'Auth\LoginController@showLoginForm')->name('login');
+            $this->post('login', $namespace . 'Auth\LoginController@login');
+            $this->post('logout', $namespace . 'Auth\LoginController@logout')->name('logout');
 
             // Registration Routes...
             if ($options['register'] ?? true) {
-                $this->get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
-                $this->post('register', 'Auth\RegisterController@register');
+                $this->get('register', $namespace . 'Auth\RegisterController@showRegistrationForm')->name('register');
+                $this->post('register', $namespace . 'Auth\RegisterController@register');
             }
 
             // Password Reset Routes...
             if ($options['reset'] ?? true) {
-                $this->resetPassword();
+                $this->resetPassword($namespace);
             }
 
             // Password Confirmation Routes...
             if ($options['confirm'] ??
                 class_exists($this->prependGroupNamespace('Auth\ConfirmPasswordController'))) {
-                $this->confirmPassword();
+                $this->confirmPassword($namespace);
             }
 
             // Email Verification Routes...
             if ($options['verify'] ?? false) {
-                $this->emailVerification();
+                $this->emailVerification($namespace);
             }
         };
     }
@@ -47,13 +49,13 @@ class AuthRouteMethods
      *
      * @return void
      */
-    public function resetPassword()
+    public function resetPassword($namespace)
     {
         return function () {
-            $this->get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
-            $this->post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
-            $this->get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
-            $this->post('password/reset', 'Auth\ResetPasswordController@reset')->name('password.update');
+            $this->get('password/reset', $namespace . 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
+            $this->post('password/email', $namespace . 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+            $this->get('password/reset/{token}', $namespace . 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
+            $this->post('password/reset', $namespace . 'Auth\ResetPasswordController@reset')->name('password.update');
         };
     }
 
@@ -62,11 +64,11 @@ class AuthRouteMethods
      *
      * @return void
      */
-    public function confirmPassword()
+    public function confirmPassword($namespace)
     {
         return function () {
-            $this->get('password/confirm', 'Auth\ConfirmPasswordController@showConfirmForm')->name('password.confirm');
-            $this->post('password/confirm', 'Auth\ConfirmPasswordController@confirm');
+            $this->get('password/confirm', $namespace . 'Auth\ConfirmPasswordController@showConfirmForm')->name('password.confirm');
+            $this->post('password/confirm', $namespace . 'Auth\ConfirmPasswordController@confirm');
         };
     }
 
@@ -75,12 +77,12 @@ class AuthRouteMethods
      *
      * @return void
      */
-    public function emailVerification()
+    public function emailVerification($namespace)
     {
         return function () {
-            $this->get('email/verify', 'Auth\VerificationController@show')->name('verification.notice');
-            $this->get('email/verify/{id}/{hash}', 'Auth\VerificationController@verify')->name('verification.verify');
-            $this->post('email/resend', 'Auth\VerificationController@resend')->name('verification.resend');
+            $this->get('email/verify', $namespace . 'Auth\VerificationController@show')->name('verification.notice');
+            $this->get('email/verify/{id}/{hash}', $namespace . 'Auth\VerificationController@verify')->name('verification.verify');
+            $this->post('email/resend', $namespace . 'Auth\VerificationController@resend')->name('verification.resend');
         };
     }
 }
